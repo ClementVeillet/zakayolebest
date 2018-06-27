@@ -1384,4 +1384,4 @@ message.channel.send(`${toMute} est désomais unmté !`)
 });
 
 
-bot.login(process.env.TOKEN)
+bot.login(process.env.TOKENd)
