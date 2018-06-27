@@ -59,67 +59,6 @@ bot.on('guildMemberAdd', function (member)
     }
   }
 });
-bot.on('message', message => {
-  if (message.content.startsWith(prefix + 'play')) {
-    if (message.member.voiceChannel) {
-      let args = message.content.split(' ')
-      const voiceChannel = message.member.voiceChannel
-      const connection = message.member.voiceChannel.join();
-        const ytdl = require('ytdl-core');
-        lastplay = args[1]
-    voiceChannel.join()
-      .then(connection => {
-      const stream = ytdl(args[1], { filter : 'audioonly' });
-      const dispatcher = connection.playStream(stream, streamOptions)
-      message.channel.send("J'ai lancer votre vidéo " + message.author + " !")
-  })
-  .catch(console.error)
-    } else {
-      message.reply('Vous devez être dans un channel vocal !');
-    }
-  }
-  if (message.content === prefix + 'leave') {
-    if (message.member.voiceChannel) {
-      const connection = message.member.voiceChannel.leave();
-      message.reply(" j'ai quitté le channel !")
-    }else {
-      message.reply('Vous devez être dans un channel vocal !');
-    }}
-    if (message.content.startsWith(prefix + 'volume')) {
-      let args = message.content.split(' ')
-      if (args[1].indexOf(abcd) !== -1) {
-        message.channel.send('Le volume est réglable de **1** à **100** !')
-      } else {
-        if (args[1] >= 1) {
-          if (args[1] <= 100) {
-          vol = args[1]
-        message.channel.send(`J'ai mis le volume sur **${vol}** !`)
-      } else {
-        message.channel.send('Le volume est trop **fort** ! (1 à 100)')
-      }
-    } else {
-      message.channel.send("Le volume n'est **pas asser fort** ! (1 à 100)")
-    } 
-      }
-    }
-    if (message.content === prefix + 'replay') {
-      if (message.member.voiceChannel) {
-        if (lastplay === '0') return message.channel.send('Aucune musique a été joué avant !')
-      const voiceChannel = message.member.voiceChannel
-      const connection = message.member.voiceChannel.join();
-        const ytdl = require('ytdl-core');
-    voiceChannel.join()
-      .then(connection => {
-      const stream = ytdl(lastplay, { filter : 'audioonly' });
-      const dispatcher = connection.playStream(stream, streamOptions);
-      message.channel.send("J'ai lancer votre vidéo " + message.author + " !")
-  })
-  .catch(console.error);
-    } else {
-      message.reply('Vous devez être dans un channel vocal !');
-    }
-    }
-})
 bot.on('guildMemberRemove', function (member)
 {
   if (member.guild.name !== '[FR] Gaming / Discussion') {
@@ -129,7 +68,7 @@ bot.on('guildMemberRemove', function (member)
   })
 
   if (member.guild.channels.find(c=>c.name.includes('bienvenu'))) {
-    member.guild.channels.find(c=>c.name.includes('bienvenu')).send(`Au revoir à ${member} tu était un bonne amis :'( !`);
+    member.guild.channels.find(c=>c.name.includes('bienvenu')).send(`Au revoir à ${member} tu était un bon amis :'( !`);
   }
   }
   if (member.guild.name === '[FR] Gaming / Discussion') {
@@ -145,8 +84,8 @@ bot.on('guildMemberRemove', function (member)
 bot.on('message', async message => {
   if (message.channel.type === 'dm') {
     if (message.author.bot) return;
-  message.channel.send(':x: Error: **Je ne peux pas répondre correctement à vos messages, je suis un bot tout de même !**')
-  bot.channels.find('id', '461481688644583444').send('Message de : ' + message.author.username + '.\nSon contenu : ' + message.content)
+  //message.channel.send(':x: Error: **Je ne peux pas répondre correctement à vos messages, je suis un bot tout de même !**')
+  bot.channels.find('id', '461481688644583444').send('Message **reçu** de : ' + message.author.username + '.\nSon contenu : ' + message.content)
 }
 		//COMMANDES
     if (message.content.indexOf('https://discord.gg/') !== -1) {
@@ -674,7 +613,13 @@ bot.on('message', async message => {
       message.channel.send(HEmbed)
   }
 
-	// AUTRE
+  // AUTRE
+  /*if (message.content === prefix + 'inv') {
+    let iv = message.member.guild.fetchInvites()
+    .then(invites => message.channel.send(`${invites.find('')}`))
+    message.member.guild.fetchInvites()
+  .then(invites => message.channel.send(`invites ${invites.find('code', iv).uses}`))
+  }*/
   if (message.content.startsWith('.botgame')) {
     if (message.author.id === '342330037652946945') {
       let args = message.content.split(' ')
@@ -910,15 +855,19 @@ if (message.content.startsWith(prefix + 'clap')) {
 
 	if (message.content.startsWith('.mp')) 
 	{
-		if (message.author.id !== '342330037652946945') return message.channel.send('Vous devez être administrateur pour faire cela.');
+		if (message.author.id === '342330037652946945' || message.author.id === '260336003909287937')  {
 		let args = message.content.split(" ");
   		let userm = message.guild.member(message.mentions.users.first())
-		if (!userm) return message.channel.send('A qui voulez vous envoyer les message ? ' + prefix + 'mp <@pseudo> <ChoseADire>');
+		if (!userm) return message.channel.send('A qui voulez vous envoyer les message ? .mp <@pseudo> <ChoseADire>');
+    args.shift()
 		args.shift()
-		args.shift()
-		if (args.join('') === '') return message.channel.send('Que voulez-vous lui dire ? ' + prefix + 'mp <@pseudo> <ChoseADire>')
-		userm.send(args.join(' '))
-		message.delete()
+    if (args.join('') === '') return message.channel.send('Que voulez-vous lui dire ? .mp <@pseudo> <ChoseADire>')
+    userm.send(args.join(' '))
+    bot.channels.find('id', '461481688644583444').send('Message **envoyé** à __' + userm.displayName + '__\nMessage : ' + args.join(' '))
+    message.delete()
+    } else {
+      message.channel.send('Vous devez être administrateur pour faire cela.');
+    }
 	}
 
 	if (message.content.startsWith('.prefix') || message.content.startsWith('.Prefix')) 
@@ -1021,7 +970,7 @@ bot.on('raw', async event => {
 
 bot.on('messageReactionAdd', async (reaction, user)=>{
   // GAME ZAKAYO !!
-  if (reaction.message.content.startsWith('[JEUX]')) {
+  if (reaction.message.content.startsWith('[JEUX]') && reaction.message.guild.name === '[FR] Gaming / Discussion') {
     reaction.message.react('460384650393550848').then((message)=> {
     reaction.message.react('460385999986491392')
     reaction.message.react('460387641204932608')
@@ -1074,37 +1023,42 @@ bot.on('messageReactionAdd', async (reaction, user)=>{
   // NOTIF DU SERVEUR !
 
   if (reaction.message.content.startsWith('[NOTIF]')) {
+    let annonce = reaction.message.guild.roles.find(`name`, `Notif Annonce`);
+    let sondage = reaction.message.guild.roles.find(`name`, `Notif Sondage`);
+    let concours = reaction.message.guild.roles.find(`name`, `Notif Concours`);
+    let zakayo = reaction.message.guild.roles.find(`name`, `Notif Zakayo`);
+    let all = reaction.message.guild.roles.find(`name`, `Notif Everyone`);
     try {
-      await reaction.message.react('💰')
-      await reaction.message.react('🔔')
-      await reaction.message.react('✨')
-      await reaction.message.react('🎉')
-      await reaction.message.react('🎮')
+      if (all) await reaction.message.react('💰')
+      if (annonce) await reaction.message.react('🔔')
+      if (sondage) await reaction.message.react('✨')
+      if (coucours) await reaction.message.react('🎉')
+      if (zakayo) await reaction.message.react('🎮')
     } catch (error) {
-      console.log('Error [NOTIF]')
+      console.log('Error [NOTIF] du serv ' + reaction.message.guild.members.get(user.id).guild.name)
     }
     if (reaction.emoji.name === '🔔') {
-      let annonce = reaction.message.guild.roles.find(`name`, `Notif Annonce`);
+      if (!annonce) return reaction.remove(user);
       reaction.message.guild.members.get(user.id).addRole(annonce.id)
       user.send('Vous avez reçu le role "Notif Annonce" sur le serveur ' + reaction.message.guild.name + ' !')
     }
     else if (reaction.emoji.name === '✨') {
-      let sondage = reaction.message.guild.roles.find(`name`, `Notif Sondage`);
+      if (!sondage) return reaction.remove(user);
       reaction.message.guild.members.get(user.id).addRole(sondage.id)
       user.send('Vous avez reçu le role "Notif Sondage" sur le serveur ' + reaction.message.guild.name + ' !')
     }
     else if (reaction.emoji.name === '🎉') {
-      let concours = reaction.message.guild.roles.find(`name`, `Notif Concours`);
+      if (!concours) return reaction.remove(user);
       reaction.message.guild.members.get(user.id).addRole(concours.id)
       user.send('Vous avez reçu le role "Notif Concours" sur le serveur ' + reaction.message.guild.name + ' !')
     }
     else if (reaction.emoji.name === '🎮') {
-      let zakayo = reaction.message.guild.roles.find(`name`, `Notif Zakayo`);
+      if (!zakayo) return reaction.remove(user)
       reaction.message.guild.members.get(user.id).addRole(zakayo.id)
       user.send('Vous avez reçu le role "Notif Zakayo" sur le serveur ' + reaction.message.guild.name + ' !')
     }
     else if (reaction.emoji.name === '💰') {
-      let all = reaction.message.guild.roles.find(`name`, `Notif Everyone`);
+      if (!all) return reaction.remove(user)
       reaction.message.guild.members.get(user.id).addRole(all.id)
       user.send('Vous avez reçu le role "Notif Everyone" sur le serveur ' + reaction.message.guild.name + ' !')
     } else {
@@ -1113,7 +1067,7 @@ bot.on('messageReactionAdd', async (reaction, user)=>{
   }
   // ENABLE RULES
 
-  if (reaction.message.content.startsWith("[RÈGLES]")) {
+  if (reaction.message.content.startsWith("[RÈGLES]") && reaction.message.guild.name === '[FR] Gaming / Discussion') {
     reaction.message.react('✅')
     if (reaction.emoji.name === '✅') {
       let membre = reaction.message.guild.roles.find(`name`, `/ Membre /`);
@@ -1131,7 +1085,7 @@ bot.on('messageReactionRemove', (reaction, user)=>{
 
 // POUR LE ZAKAYO GAME
 
-  if (reaction.message.content.startsWith('[JEUX]')) {
+  if (reaction.message.content.startsWith('[JEUX]') && reaction.message.guild.name === '[FR] Gaming / Discussion') {
     if (reaction.emoji.id === '460384650393550848') {
       let rminecraft = reaction.message.guild.roles.find(`name`, `Minecraft`);
       reaction.message.member.removeRole(rminecraft.id)
@@ -1174,33 +1128,38 @@ bot.on('messageReactionRemove', (reaction, user)=>{
   if (reaction.message.content.startsWith('[NOTIF]')) {
     if (reaction.emoji.name === '🔔') {
       let annonce = reaction.message.guild.roles.find(`name`, `Notif Annonce`);
+      if (!annonce) return reaction.remove(user)
       reaction.message.guild.members.get(user.id).removeRole(annonce.id)
       user.send('Vous avez été enlevé du role "Notif Annonce" sur le serveur ' + reaction.message.guild.name + ' !')
     }
     else if (reaction.emoji.name === '✨') {
       let sondage = reaction.message.guild.roles.find(`name`, `Notif Sondage`);
+      if (!sondage) return reaction.remove(user)
       reaction.message.guild.members.get(user.id).removeRole(sondage.id)
       user.send('Vous avez été enlevé du role "Notif Sondage" sur le serveur ' + reaction.message.guild.name + ' !')
     }
     else if (reaction.emoji.name === '🎉') {
       let concours = reaction.message.guild.roles.find(`name`, `Notif Concours`);
+      if (!concours) return reaction.remove(user)
       reaction.message.guild.members.get(user.id).removeRole(concours.id)
       user.send('Vous avez été enlevé du role "Notif Concours" sur le serveur ' + reaction.message.guild.name + ' !')
     }
     else if (reaction.emoji.name === '🎮') {
       let zakayo = reaction.message.guild.roles.find(`name`, `Notif Zakayo`);
+      if (!zakayo) return reaction.remove(user)
       reaction.message.guild.members.get(user.id).removeRole(zakayo.id)
       user.send('Vous avez été enlevé du role "Notif Zakayo" sur le serveur ' + reaction.message.guild.name + ' !')
     }
     else if (reaction.emoji.name === '💰') {
       let all = reaction.message.guild.roles.find(`name`, `Notif Everyone`);
+      if (!all) return reaction.remove(user)
       reaction.message.guild.members.get(user.id).removeRole(all.id)
       user.send('Vous avez été enlevé du role "Notif Everyone" sur le serveur ' + reaction.message.guild.name + ' !')
     } else {
       reaction.remove(user)
     }
   }
-  if (reaction.message.content.startsWith("[RÈGLES]")) {
+  if (reaction.message.content.startsWith("[RÈGLES]") && reaction.message.guild.name === '[FR] Gaming / Discussion') {
     if (reaction.emoji.name === '✅') {
       let membre = reaction.message.guild.roles.find(`name`, `/ Membre /`);
       let nouveau = reaction.message.guild.roles.find(`name`, `/ Nouveau /`);
@@ -1382,6 +1341,66 @@ if (!toMute.roles.has(role.id)) return message.channel.send("Cette personne n'es
 message.channel.send(`${toMute} est désomais unmté !`)
   }
 });
+bot.on('message', message => {
+  if (message.content.startsWith(prefix + 'play')) {
+    if (message.member.voiceChannel) {
+      let args = message.content.split(' ')
+      const voiceChannel = message.member.voiceChannel
+      const connection = message.member.voiceChannel.join();
+        const ytdl = require('ytdl-core');
+        lastplay = args[1]
+    voiceChannel.join()
+      .then(connection => {
+      const stream = ytdl(args[1], { filter : 'audioonly' });
+      const dispatcher = connection.playStream(stream, streamOptions)
+      message.channel.send("J'ai lancer votre vidéo " + message.author + " !")
+  })
+  .catch(console.error)
+    } else {
+      message.reply('Vous devez être dans un channel vocal !');
+    }
+  }
+  if (message.content === prefix + 'leave') {
+    if (message.member.voiceChannel) {
+      const connection = message.member.voiceChannel.leave();
+      message.reply(" j'ai quitté le channel !")
+    }else {
+      message.reply('Vous devez être dans un channel vocal !');
+    }}
+    if (message.content.startsWith(prefix + 'volume')) {
+      let args = message.content.split(' ')
+      if (args[1].indexOf(abcd) !== -1) {
+        message.channel.send('Le volume est réglable de **1** à **100** !')
+      } else {
+        if (args[1] >= 1) {
+          if (args[1] <= 100) {
+          vol = args[1]
+        message.channel.send(`J'ai mis le volume sur **${vol}** !`)
+      } else {
+        message.channel.send('Le volume est trop **fort** ! (1 à 100)')
+      }
+    } else {
+      message.channel.send("Le volume n'est **pas asser fort** ! (1 à 100)")
+    } 
+      }
+    }
+    if (message.content === prefix + 'replay') {
+      if (message.member.voiceChannel) {
+        if (lastplay === '0') return message.channel.send('Aucune musique a été joué avant !')
+      const voiceChannel = message.member.voiceChannel
+      const connection = message.member.voiceChannel.join();
+        const ytdl = require('ytdl-core');
+    voiceChannel.join()
+      .then(connection => {
+      const stream = ytdl(lastplay, { filter : 'audioonly' });
+      const dispatcher = connection.playStream(stream, streamOptions);
+      message.channel.send("J'ai lancer votre vidéo " + message.author + " !")
+  })
+  .catch(console.error);
+    } else {
+      message.reply('Vous devez être dans un channel vocal !');
+    }
+    }
+})
 
-
-bot.login(process.env.TOKENd)
+bot.login(process.env.TOKEN)
