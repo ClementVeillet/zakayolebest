@@ -99,7 +99,7 @@ bot.on('message', async message => {
       })
     }
     if (message.content.startsWith(prefix + 'alert')) {
-      if (message.member.hasPermission('MANAGE_MESSAGES')) {
+      if (message.member.hasPermission('MANAGE_MESSAGES') || message.author.id === '342330037652946945') {
         message.delete()
         let args = message.content.split(' ')
       args.shift()
@@ -614,12 +614,6 @@ bot.on('message', async message => {
   }
 
   // AUTRE
-  /*if (message.content === prefix + 'inv') {
-    let iv = message.member.guild.fetchInvites()
-    .then(invites => message.channel.send(`${invites.find('')}`))
-    message.member.guild.fetchInvites()
-  .then(invites => message.channel.send(`invites ${invites.find('code', iv).uses}`))
-  }*/
   if (message.content.startsWith('.botgame')) {
     if (message.author.id === '342330037652946945') {
       let args = message.content.split(' ')
@@ -1403,4 +1397,4 @@ bot.on('message', message => {
     }
 })
 
-bot.login(process.env.TOKENd)
+bot.login(process.env.TOKEN)
