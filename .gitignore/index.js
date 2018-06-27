@@ -8,6 +8,7 @@ const fun = require('./commands/fun')
 const silence = require('./commands/silence')
 const qr = require('./commands/qr')
 const talkedRecently = new Set();
+var lastplay = '0';
 var vol = 1;
 var streamOptions = { seek: 0, volume: vol };
 var abcd = ["a", "b", "c", "d", "e", ,"f" ,"g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
@@ -18,7 +19,7 @@ const s = now.getSeconds();
 var mess = null;
 var amessage = null;
 var on = true;
-var botGame = `_help | 6 srv | Zakayo`
+var botGame = `_help | 5 srv | Zakayo`
 var prefix = '_'
 var bws = true
 var qrvar = true
@@ -42,7 +43,7 @@ bot.on('guildMemberAdd', function (member)
     channel.send('Bienvenu(e) sur le serveur ' + member.guild.name + ' va dans un channel textuel pour parler !')
   })
   if (member.guild.channels.find(c=>c.name.includes('bienvenu'))) {
-    member.guild.channels.find(c=>c.name.includes('bienvenu')).send(`Bienvenue à @${member} sur le serveur ` + member.guild.name + ` !`);
+    member.guild.channels.find(c=>c.name.includes('bienvenu')).send(`Bienvenue à ${member} sur le serveur ` + member.guild.name + ` !`);
   }
   }
 
@@ -51,7 +52,7 @@ bot.on('guildMemberAdd', function (member)
     member.addRole('454353752078549008')
     member.createDM().then(function (channel) 
   {
-    channel.send("Bienvenu(e) à toi sur le serveur [FR] Gaming / Discussion ! Tu peux aller dans Discussion pour parler mais n'oublie pas de lire les règles ! Nous organisons souvent des concours pour gagner des choses dans le sytle de compte minecraft grade ou autre ! Amuse-toi bien ! ")
+    channel.send("Bienvenu(e) à toi sur le serveur [FR] Gaming / Discussion ! Tu peux aller dans Discussion pour parler mais n'oublie pas de lire les règles et de les accepter ! Nous organisons souvent des concours pour gagner des choses dans le sytle de compte minecraft grade ou autre ! Amuse-toi bien ! ")
   })
   if (member.guild.channels.find("name","🔰-bonjour-aurevoir-🔰")) {
     member.guild.channels.find("name","🔰-bonjour-aurevoir-🔰").send(`Bienvenue à ${member} sur le serveur **[FR] Gaming / Discussion** ! Va dans <#410086550639083520> pour parler avec les autres membres, tu peux aussi aller dans <#460846838271049758> pour activer ou non les notifs mais n'oublie pas d'aller dans <#410088360342847488> et de les accepter !`);
@@ -65,13 +66,14 @@ bot.on('message', message => {
       const voiceChannel = message.member.voiceChannel
       const connection = message.member.voiceChannel.join();
         const ytdl = require('ytdl-core');
+        lastplay = args[1]
     voiceChannel.join()
       .then(connection => {
       const stream = ytdl(args[1], { filter : 'audioonly' });
-      const dispatcher = connection.playStream(stream, streamOptions);
+      const dispatcher = connection.playStream(stream, streamOptions)
       message.channel.send("J'ai lancer votre vidéo " + message.author + " !")
   })
-  .catch(console.error);
+  .catch(console.error)
     } else {
       message.reply('Vous devez être dans un channel vocal !');
     }
@@ -100,6 +102,23 @@ bot.on('message', message => {
     } 
       }
     }
+    if (message.content === prefix + 'replay') {
+      if (message.member.voiceChannel) {
+        if (lastplay === '0') return message.channel.send('Aucune musique a été joué avant !')
+      const voiceChannel = message.member.voiceChannel
+      const connection = message.member.voiceChannel.join();
+        const ytdl = require('ytdl-core');
+    voiceChannel.join()
+      .then(connection => {
+      const stream = ytdl(lastplay, { filter : 'audioonly' });
+      const dispatcher = connection.playStream(stream, streamOptions);
+      message.channel.send("J'ai lancer votre vidéo " + message.author + " !")
+  })
+  .catch(console.error);
+    } else {
+      message.reply('Vous devez être dans un channel vocal !');
+    }
+    }
 })
 bot.on('guildMemberRemove', function (member)
 {
@@ -127,6 +146,7 @@ bot.on('message', async message => {
   if (message.channel.type === 'dm') {
     if (message.author.bot) return;
   message.channel.send(':x: Error: **Je ne peux pas répondre correctement à vos messages, je suis un bot tout de même !**')
+  bot.channels.find('id', '461481688644583444').send('Message de : ' + message.author.username + '.\nSon contenu : ' + message.content)
 }
 		//COMMANDES
     if (message.content.indexOf('https://discord.gg/') !== -1) {
@@ -274,18 +294,15 @@ bot.on('message', async message => {
     	.setColor("#FFFFFF")
     	.addField("~Info~", "Pour connaitre le prefix : ?iprefix.")
     	.addField('Aide', prefix + "help <nom de la commande> pour obtenir de l'aide sur la commande." + prefix + "helphere pour avoir l'aide dans le channel.")
-   		.addField("Commande de base :", "```invite, google, youtube, ping, si, botinfo, guild, id, membercount, new```")
-   		.addField("Fun :", "```rps, 8ball, call, pf, nani, dice, silence, clap, message, messageset, play, leave```")
-   		.addField("Jeu :", "```kill, addgame, removegame```")
-   		.addField("Commande personnalisé :", "```Under2World : troll\nZayy' : dieu\nAlexian548 : admintroll```")
-      .addField("Voici l'aide des admins :", "```say, kick, ban, mp, alert, mute, unmute, clear```")
-      .addField('Heure', `${h}:${m}`)
+   		.addField("Commandes :", "```invite, google, youtube, ping, si, botinfo, guild, id, membercount, new, rps, 8ball, call, pf, nani, dice, silence, clap, message, messageset, play, leave, replay, volume, kill```")
+   		.addField("Commandes personnalisé :", "```troll, dieu, admintroll```")
+      .addField("Commandes admin :", "```say, kick, ban, alert, mute, unmute, clear```")
 
     let HDimz = new Discord.RichEmbed()
     .setTitle('Help de DiMz')
     .setColor('#FFFFFF')
     .setDescription('Vos commandes sont à utiliser avec "." comme prefix !')
-    .addField("Voici la liste de vos commande DiMz :"," ```set, unset, destruction, botgame, prefix, serveur, infoserveur, ban, msg, banword, on```")
+    .addField("Voici la liste de vos commande DiMz :"," ```set, unset, destruction, botgame, prefix, serveur, infoserveur, ban, msg, banword, on, mp```")
 
     	if (message.content.startsWith(prefix + 'helphere') || message.content.startsWith(prefix + 'hh')) 
 		{
@@ -638,6 +655,24 @@ bot.on('message', async message => {
       .addField("Comment utiliser cette commande ?", prefix + "leave")
       message.channel.send(HEmbed)
   }
+  if (message.content === prefix + 'help replay' || message.content === prefix + 'h replay')
+  {
+    let HEmbed = new Discord.RichEmbed()
+      .setDescription("~Help~")
+      .setColor("#FFFFFF")
+      .addField("A quoi sert cette commande ?", "Elle sert à rejouer la dernière musique écouté.")
+      .addField("Comment utiliser cette commande ?", prefix + "replay")
+      message.channel.send(HEmbed)
+  }
+  if (message.content === prefix + 'help volume' || message.content === prefix + 'h volume')
+  {
+    let HEmbed = new Discord.RichEmbed()
+      .setDescription("~Help~")
+      .setColor("#FFFFFF")
+      .addField("A quoi sert cette commande ?", "Elle sert à régler le volume de la musique (de 1 à 100)")
+      .addField("Comment utiliser cette commande ?", prefix + "volume")
+      message.channel.send(HEmbed)
+  }
 
 	// AUTRE
   if (message.content.startsWith('.botgame')) {
@@ -873,9 +908,9 @@ if (message.content.startsWith(prefix + 'clap')) {
 	} else {return message.channel.send('Vous devez être administrateur pour faire cela.')}
 	}
 
-	if (message.content.startsWith(prefix + 'mp')) 
+	if (message.content.startsWith('.mp')) 
 	{
-		if (!message.member.hasPermission('ADMINISTRATOR')) return message.channel.send('Vous devez être administrateur pour faire cela.');
+		if (message.author.id !== '342330037652946945') return message.channel.send('Vous devez être administrateur pour faire cela.');
 		let args = message.content.split(" ");
   		let userm = message.guild.member(message.mentions.users.first())
 		if (!userm) return message.channel.send('A qui voulez vous envoyer les message ? ' + prefix + 'mp <@pseudo> <ChoseADire>');
@@ -1076,6 +1111,19 @@ bot.on('messageReactionAdd', async (reaction, user)=>{
       reaction.remove(user)
     }
   }
+  // ENABLE RULES
+
+  if (reaction.message.content.startsWith("[RÈGLES]")) {
+    reaction.message.react('✅')
+    if (reaction.emoji.name === '✅') {
+      let membre = reaction.message.guild.roles.find(`name`, `/ Membre /`);
+      let nouveau = reaction.message.guild.roles.find('name', ('/ Nouveau /'))
+      reaction.message.guild.members.get(user.id).addRole(membre.id)
+      reaction.message.guild.members.get(user.id).removeRole(nouveau.id)
+    } else {
+      reaction.remove(user)
+    }
+  }
 
 });
 
@@ -1148,6 +1196,16 @@ bot.on('messageReactionRemove', (reaction, user)=>{
       let all = reaction.message.guild.roles.find(`name`, `Notif Everyone`);
       reaction.message.guild.members.get(user.id).removeRole(all.id)
       user.send('Vous avez été enlevé du role "Notif Everyone" sur le serveur ' + reaction.message.guild.name + ' !')
+    } else {
+      reaction.remove(user)
+    }
+  }
+  if (reaction.message.content.startsWith("[RÈGLES]")) {
+    if (reaction.emoji.name === '✅') {
+      let membre = reaction.message.guild.roles.find(`name`, `/ Membre /`);
+      let nouveau = reaction.message.guild.roles.find(`name`, `/ Nouveau /`);
+      reaction.message.guild.members.get(user.id).removeRole(membre.id)
+      reaction.message.guild.members.get(user.id).addRole(nouveau.id)
     } else {
       reaction.remove(user)
     }
@@ -1326,4 +1384,4 @@ message.channel.send(`${toMute} est désomais unmté !`)
 });
 
 
-bot.login(process.env.TOKENd)
+bot.login(process.env.TOKEN)
