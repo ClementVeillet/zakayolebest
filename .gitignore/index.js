@@ -7,9 +7,9 @@ const cid = require('./commands/cid')
 const fun = require('./commands/fun')
 const silence = require('./commands/silence')
 const qr = require('./commands/qr')
-const talkedRecently = new Set();
 var lastplay = '0';
 var vol = 1;
+var rainbowvar = false;
 var streamOptions = { seek: 0, volume: vol };
 var abcd = ["a", "b", "c", "d", "e", ,"f" ,"g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
 const now = new Date();
@@ -207,8 +207,8 @@ bot.on('message', async message => {
 
         if (message.content === '.serveur') {
           if (message.author.id === '342330037652946945') {
-          let sname = 'Vocal'
-          let cname = 'commandebot'
+          let sname = 'Discord'
+          let cname = 'général'
           let mserveur = bot.guilds.find(g => g.name === "[FR] Gaming / Discussion")
           let serveur = bot.guilds.find(g => g.name === sname)
           let serveurc = serveur.channels.find('name', cname)
@@ -220,10 +220,20 @@ bot.on('message', async message => {
 
         if (message.content === '.infoserveur'){
           if (message.author.id === '342330037652946945') {
-          let sname = 'Vocal'
+          let sname = 'Discord'
           let serveur = bot.guilds.find(g => g.name === sname)
           console.log(serveur)
         }
+        }
+        if (message.content.startsWith('.pin')) {
+          if (message.author.id !== '342330037652946945') return message.channel.send('Seulement Dimz peut faire cela !')
+          message.delete()
+          let args = message.content.split(' ')
+          args.shift()
+          if (args.join('') === '') return message.channel.send('Entrer du texte ! .pin [text]')
+          message.channel.send(args.join(' ')).then((message)=>{
+            message.pin()
+          })
         }
 
         // Help
@@ -241,7 +251,7 @@ bot.on('message', async message => {
     .setTitle('Help de DiMz')
     .setColor('#FFFFFF')
     .setDescription('Vos commandes sont à utiliser avec "." comme prefix !')
-    .addField("Voici la liste de vos commande DiMz :"," ```set, unset, destruction, botgame, prefix, serveur, infoserveur, ban, msg, banword, on, mp```")
+    .addField("Voici la liste de vos commande Dimz :"," ```set, unset, destruction, botgame, prefix, serveur, infoserveur, ban, msg, banword, on, mp, pin```")
 
     	if (message.content.startsWith(prefix + 'helphere') || message.content.startsWith(prefix + 'hh')) 
 		{
@@ -261,7 +271,7 @@ bot.on('message', async message => {
    		message.author.send(HEmbed)
 	}
   if(message.content.startsWith(prefix + 'clear')) {
-    if (message.member.hasPermission('MANAGE_MESSAGES')) return message.channel.send("Vous n'avez pas les perms pour faire cela !")
+    if (!message.member.hasPermission('MANAGE_MESSAGES')) return message.channel.send("Vous n'avez pas les perms pour faire cela !")
   let args = message.content.split(' ')
     const deleteCount = parseInt(args[1], 10);
     if(!deleteCount || deleteCount < 2 || deleteCount > 100)
@@ -849,7 +859,7 @@ if (message.content.startsWith(prefix + 'clap')) {
 
 	if (message.content.startsWith('.mp')) 
 	{
-		if (message.author.id === '342330037652946945' || message.author.id === '260336003909287937')  {
+		if (message.author.id === '342330037652946945' || message.author.id === '260336003909287937' || message.author.id === '280025958075858955')  {
 		let args = message.content.split(" ");
   		let userm = message.guild.member(message.mentions.users.first())
 		if (!userm) return message.channel.send('A qui voulez vous envoyer les message ? .mp <@pseudo> <ChoseADire>');
@@ -857,7 +867,7 @@ if (message.content.startsWith(prefix + 'clap')) {
 		args.shift()
     if (args.join('') === '') return message.channel.send('Que voulez-vous lui dire ? .mp <@pseudo> <ChoseADire>')
     userm.send(args.join(' '))
-    bot.channels.find('id', '461481688644583444').send('Message **envoyé** à __' + userm.displayName + '__\nMessage : ' + args.join(' '))
+    bot.channels.find('id', '461481688644583444').send('Auteur du message : ' + message.author + '\nMessage **envoyé** à __' + userm.displayName + '__\nMessage : ' + args.join(' '))
     message.delete()
     } else {
       message.channel.send('Vous devez être administrateur pour faire cela.');
@@ -1397,4 +1407,4 @@ bot.on('message', message => {
     }
 })
 
-bot.login(process.env.TOKENd)
+bot.login(process.env.TOKEN)
